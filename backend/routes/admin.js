@@ -14,7 +14,7 @@ router.post("/addcourse", async (req, res) => {
         return res.status(400).json({ error: errMsg });
     }
 
-    if (!(req.body.name || req.body.description || req.body.image)) {
+    if (!(req.body.title && req.body.description)) {
         errMsg = "mandatory field missing field in request";
         logger.error(errMsg);
         return res.status(401).json({ error: errMsg });
@@ -24,7 +24,7 @@ router.post("/addcourse", async (req, res) => {
         const course = new Course({
             title: req.body.title,
             description: req.body.description,
-            image: req.body.image,
+//            image: req.body.image,
         });
 
         Course.create(course, (err, data) => {

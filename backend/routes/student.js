@@ -15,7 +15,7 @@ router.post("/signup", async (req, res) => {
         return res.status(400).json({ error: errMsg });
     }
     
-    if (!(req.body.firstname || req.body.lastname || req.body.email || req.body.password || req.body.gender || req.body.phonenumber || req.body.city || req.body.country)) {
+    if (!(req.body.firstname && req.body.lastname && req.body.email && req.body.password && req.body.gender && req.body.phonenumber && req.body.city && req.body.country)) {
         errMsg = "mandatory field missing field in request";
         logger.error(errMsg);
         return res.status(401).json({ error: errMsg });

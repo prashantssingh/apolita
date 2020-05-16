@@ -3,9 +3,9 @@ const logger = require('../logger/logger');
 
 // constructor for Course schema
 const Course = function(course) {
-    this.name = course.name;
+    this.title = course.title;
     this.description = course.description;
-    this.image = course.image;
+    this.image = 'image';
 };
 
 // @parameters:
