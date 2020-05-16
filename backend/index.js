@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require("cors");
-var path = require('path');
 
 const logger = require('./logger/logger');
 const studentRoutes = require("./routes/student");
@@ -16,7 +15,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin', adminRoutes);
 app.use('/student', studentRoutes);
