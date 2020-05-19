@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
+const uuidv4 = require('uuid/v4');
 
 // const middleware = require("../middlewares/middleware.js");
 const logger = require('../logger/logger');
@@ -36,12 +37,14 @@ router.post("/signup", async (req, res) => {
         return res.status(401).json({ error: errMsg });
     } 
 
+    const newUUID = uuidv4();
     // const passwordHash = await bcrypt.hash(req.body.password, saltRounds)
     try {
         User.findByEmail(req.body.email, (err, data) => {
             if (err) {
                 if (err.kind == "not_found") {
                     const user = new User({
+                        uuid = newUUID,
                         firstname : req.body.firstname,
                         lastname : req.body.lastname,
                         email : req.body.email,

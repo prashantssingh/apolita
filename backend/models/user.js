@@ -3,6 +3,7 @@ const logger = require('../logger/logger');
 
 // constructor for User schema
 const User = function(user) {
+    this.uuid = user.uuid;
     this.firstname = user.firstname;
     this.lastname = user.lastname;
     this.email = user.email;
@@ -12,6 +13,7 @@ const User = function(user) {
     this.city = user.city;
     this.state = user.state;
     this.country = user.country;
+    this.is_authenticated = 0;
 };
 
 // @parameters:
