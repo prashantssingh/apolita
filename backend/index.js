@@ -7,7 +7,6 @@ const studentRoutes = require("./routes/student");
 const adminRoutes = require("./routes/admin");
 const courseRoutes = require("./routes/course");
 const announcementRoutes = require("./routes/announcement");
-const emailRoutes = require("./routes/email");
 
 const PORT = process.env.PORT || 8080;
 
@@ -21,7 +20,6 @@ app.use('/admin', adminRoutes);
 app.use('/student', studentRoutes);
 app.use('/course', courseRoutes);
 app.use('/announcement', announcementRoutes);
-app.use('/email', emailRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

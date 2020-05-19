@@ -117,7 +117,7 @@ CREATE TABLE `users` (
   `state` varchar(50) NOT NULL,
   `city` varchar(50) NOT NULL,
   `role_id` int(20) unsigned DEFAULT '2',
-  `is_authencated` tinyint(1) DEFAULT NULL,
+  `is_authenticated` tinyint(1) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
