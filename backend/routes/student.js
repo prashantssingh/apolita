@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
 const uuid = require('uuid');
+const path = require('path');
 
 // const middleware = require("../middlewares/middleware.js");
 const logger = require('../logger/logger');
@@ -189,7 +190,7 @@ router.get("/:id/verify", async (req, res) => {
                 return res.status(401).json({ error: errMsg });
             } else {
                 logger.info(`user successfully authenticated with uuid: ${id}`);
-                return res.status(200).json(data)
+                return res.sendFile(path.join(__dirname + '/verified.html'));
             }
         });
     } catch (err) {
