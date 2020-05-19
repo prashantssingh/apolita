@@ -113,13 +113,16 @@ router.post("/login", async (req, res) => {
                 errMsg = `user not found with email - ${req.body.email}`;
                 logger.error(errMsg);
                 return res.status(401).json({ error: errMsg });
+            } else if (!(data.is_authenticated)) {
+                errMsg = `User is not yet authenticated with email - ${req.body.email}. Please check your inbox for verification email.`;
+                logger.error(errMsg);
+                return res.status(401).json({ error: errMsg });
             } else {
                 logger.info(`user successfully logged-in using email: ${req.body.email}`);
-//                console.log(data)
                 return res.status(200).json(data)
             }
         });
-    } catch {
+    } catch(err) {
         errMsg = "encountered error while logging-in user: " + err;
         logger.error(errMsg);
         return res.status(500).json({ error: errMsg });
@@ -173,6 +176,26 @@ router.get("/enroll", async (req, res) => {
         // TODO: code to enroll the user 
     } catch {
         // catch any error
+    }
+});
+
+router.get("/:id/verify", async (req, res) => {
+    const id = req.params.id;
+    try {
+        User.updateByUUID(id, (err, data) => {
+            if ( err && err.kind == "not_found") {
+                errMsg = `user not found with uuid - ${id}`;
+                logger.error(errMsg);
+                return res.status(401).json({ error: errMsg });
+            } else {
+                logger.info(`user successfully authenticated with uuid: ${id}`);
+                return res.status(200).json(data)
+            }
+        });
+    } catch (err) {
+        errMsg = "encountered error while authenticating user: " + err;
+        logger.error(errMsg);
+        return res.status(500).json({ error: errMsg });
     }
 });
 

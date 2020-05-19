@@ -55,8 +55,6 @@ User.findByEmail = (email, result) => {
 User.findByEmailPassword = (email1, password1, result) => {
 //    console.log(password1)
     db.query(`SELECT * FROM users WHERE email = '${email1}' and password = '${password1}'`, (err, res) => {
-//        console.log(err)
-//        console.log(res[0])
         if (err) {
             result(err, null);
             return;
@@ -105,6 +103,19 @@ User.fetchAllStudents = (result) => {
     
         // couldn't find user with the given email
         result({ kind: "not_found" }, null);
+    });
+};
+
+User.updateByUUID = (uuid, result) => {
+    console.log("UUID passed:", uuid)
+    console.log("DB Query:", `UPDATE users SET is_authenticated = 1 WHERE uuid = '${uuid}'`)
+    db.query(`UPDATE users SET is_authenticated = 1 WHERE uuid = '${uuid}'`, (err, res) => {
+        if (err) {
+            result(err, null);
+            return;
+        }
+        
+        result(null, res);
     });
 };
 
