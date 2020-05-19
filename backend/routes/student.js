@@ -1,12 +1,27 @@
 const express = require('express');
 const bcrypt = require("bcrypt");
+const nodemailer = require('nodemailer');
 
 // const middleware = require("../middlewares/middleware.js");
 const logger = require('../logger/logger');
 const User = require('../models/user');
 
 const router = express.Router();
+
 const saltRounds = 10;
+const emailBody = `
+<h2>Hi ##NAME##,
+
+Thank you for signing up with apolita. One last step in the process is to verify your email. Please follow below link to activate your account with us:
+<a href="##LINK##"><b>Click here to verify!</b></a>
+
+Please contact us at support@apolita.com for queries.
+
+Thank you 
+
+--
+<b>Apolita Team</b></h2>
+`
 
 router.post("/signup", async (req, res) => {
     if (!req.body) {
@@ -149,5 +164,38 @@ router.get("/enroll", async (req, res) => {
         // catch any error
     }
 });
+
+const sendEmail = async (name, toemail, uid) => {
+    const link = "";
+    const transporter = nodemailer.createTransport({
+        host: 'mail.pxs3374.uta.cloud',
+        port: 465, 
+        secure: true,
+        auth: {
+            user: noreplyEmailID,
+            pass: 'noreply@utacloud' 
+        }
+    });
+
+    cookedEmailBody = emailBody.replace("##NAME##", name);
+    cookedEmailBody = cookedEmailBody.replace("##LINK##", link);
+
+    const mailOptions = {
+        from: `Apolita Team <no-reply@pxs3374.uta.cloud>`,
+        // to: mailingList, // Recepient email address. Multiple emails can send separated by commas
+        to: "94.prashantsingh@gmail.com",
+        subject: 'Welcome to Apolita!',
+        html: cookedEmailBody
+    };
+
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        return "";
+    } catch(err) {
+        errMsg = `encountered error while logging-in user: ${err}`
+        logger.error(errMsg);
+        return errMsg
+    }
+}
 
 module.exports = router;
