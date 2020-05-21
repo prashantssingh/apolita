@@ -3,11 +3,11 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
 
-export default function DetailListItem({ icon, title, subtitle, onPress }) {
+export default function DetailListItem({ icon, title, subtitle }) {
   return (
     <View style={styles.borderContainer}>
       <View style={styles.wrapper}>
-        <TouchableOpacity style={styles.container} onPress={onPress}>
+        <View style={styles.container}>
           {icon && (
             <Icon
               name={icon}
@@ -24,7 +24,7 @@ export default function DetailListItem({ icon, title, subtitle, onPress }) {
               <Text style={styles.subtitle}>{subtitle}</Text>
             )}
           </View>
-        </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

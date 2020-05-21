@@ -20,7 +20,7 @@ export default class QuestionCheckBox extends React.Component {
           </Text>
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={() => this.props.navigation.navigate('PersonalityTest')}
+//            onPress={() => this.props.navigation.navigate('PersonalityTest')}
           >
             <Text>Tap to take the quiz again</Text>
           </TouchableOpacity>
