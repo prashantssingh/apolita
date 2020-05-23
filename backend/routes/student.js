@@ -1,12 +1,32 @@
 const express = require('express');
 const bcrypt = require("bcrypt");
+const nodemailer = require('nodemailer');
+const uuid = require('uuid');
+const path = require('path');
 
 // const middleware = require("../middlewares/middleware.js");
 const logger = require('../logger/logger');
 const User = require('../models/user');
 
 const router = express.Router();
+
 const saltRounds = 10;
+const emailBody = `
+<h3>Hi ##NAME##,
+<br><br>
+Thank you for signing up with apolita. <br><br>One last step in the process is to verify your email. Please follow below link to activate your account with us:
+<br><a href="##LINK##"><b>Click here to verify!</b></a>
+<br><br>
+If you are unable to open above link, please copy below link and paste it in browser:
+<br>##RAWLINK##<br><br>
+Please contact us at support@apolita.com for queries.
+<br><br>
+Thank you 
+<br><br>
+--
+<br>Best Regards,
+<br><b>Apolita Team</b></h3>
+`
 
 router.post("/signup", async (req, res) => {
     if (!req.body) {
@@ -21,12 +41,14 @@ router.post("/signup", async (req, res) => {
         return res.status(401).json({ error: errMsg });
     } 
 
+    const newUUID = uuid.v4();;
     // const passwordHash = await bcrypt.hash(req.body.password, saltRounds)
     try {
         User.findByEmail(req.body.email, (err, data) => {
             if (err) {
                 if (err.kind == "not_found") {
                     const user = new User({
+                        uuid : newUUID,
                         firstname : req.body.firstname,
                         lastname : req.body.lastname,
                         email : req.body.email,
@@ -47,6 +69,11 @@ router.post("/signup", async (req, res) => {
                             });
                         } 
                         
+                        output = sendEmail(req.body.firstname, req.body.email, newUUID)
+                        if (output) {
+                            logger.info(`Result of sendmail: ${output}`);
+                        }
+
                         return res.status(200).json(data);
                     });
                 } else {
@@ -87,13 +114,16 @@ router.post("/login", async (req, res) => {
                 errMsg = `user not found with email - ${req.body.email}`;
                 logger.error(errMsg);
                 return res.status(401).json({ error: errMsg });
+            } else if (!(data.is_authenticated)) {
+                errMsg = `User is not yet authenticated with email - ${req.body.email}. Please check your inbox for verification email.`;
+                logger.error(errMsg);
+                return res.status(401).json({ error: errMsg });
             } else {
                 logger.info(`user successfully logged-in using email: ${req.body.email}`);
-//                console.log(data)
                 return res.status(200).json(data)
             }
         });
-    } catch {
+    } catch(err) {
         errMsg = "encountered error while logging-in user: " + err;
         logger.error(errMsg);
         return res.status(500).json({ error: errMsg });
@@ -149,5 +179,59 @@ router.get("/enroll", async (req, res) => {
         // catch any error
     }
 });
+
+router.get("/:id/verify", async (req, res) => {
+    const id = req.params.id;
+    try {
+        User.updateByUUID(id, (err, data) => {
+            if ( err && err.kind == "not_found") {
+                errMsg = `user not found with uuid - ${id}`;
+                logger.error(errMsg);
+                return res.status(401).json({ error: errMsg });
+            } else {
+                logger.info(`user successfully authenticated with uuid: ${id}`);
+                return res.sendFile(path.join(__dirname + '/verified.html'));
+            }
+        });
+    } catch (err) {
+        errMsg = "encountered error while authenticating user: " + err;
+        logger.error(errMsg);
+        return res.status(500).json({ error: errMsg });
+    }
+});
+
+const sendEmail = async (name, toEmail, UUID) => {
+    const link = `http://localhost:8080/student/${UUID}/verify`;
+    const transporter = nodemailer.createTransport({
+        host: 'mail.pxs3374.uta.cloud',
+        port: 465, 
+        secure: true,
+        auth: {
+            user: "no-reply@pxs3374.uta.cloud",
+            pass: "noreply@utacloud" 
+        }
+    });
+
+    cookedEmailBody = emailBody.replace("##NAME##", name);
+    cookedEmailBody = cookedEmailBody.replace("##LINK##", link);
+    cookedEmailBody = cookedEmailBody.replace("##RAWLINK##", link);
+
+    const mailOptions = {
+        from: `Apolita Team <no-reply@apolita.com>`,
+        // to: mailingList, // Recepient email address. Multiple emails can send separated by commas
+        to: toEmail,
+        subject: 'Welcome to Apolita!',
+        html: cookedEmailBody
+    };
+
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        return "";
+    } catch(err) {
+        errMsg = `encountered error while logging-in user: ${err}`
+        logger.error(errMsg);
+        return errMsg
+    }
+}
 
 module.exports = router;
