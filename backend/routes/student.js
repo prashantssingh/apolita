@@ -218,7 +218,6 @@ const sendEmail = async (name, toEmail, UUID) => {
 
     const mailOptions = {
         from: `Apolita Team <no-reply@apolita.com>`,
-        // to: mailingList, // Recepient email address. Multiple emails can send separated by commas
         to: toEmail,
         subject: 'Welcome to Apolita!',
         html: cookedEmailBody
